@@ -1,7 +1,7 @@
 {
-  "name": "C2 Vocab Master",
-  "short_name": "C2 Vocab",
-  "description": "C2レベル以上の日常・ビジネス・IT英語の単語/熟語/フレーズを習得するアプリ",
+  "name": "Phrase Master 400",
+  "short_name": "Phrase 400",
+  "description": "英語フレーズ400を4択テストと復習で身につけるアプリ",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

@@ -1,8 +1,9 @@
 // オフライン対応: アプリ本体をキャッシュし、更新があればバックグラウンドで差し替える
-const CACHE = 'c1vocab-v2';
+const CACHE = 'phrase400-v1';
 const ASSETS = [
   './', 'index.html', 'css/style.css', 'manifest.webmanifest', 'icons/icon.svg', 'icons/icon-192.png',
-  'js/app.js', 'js/data.js', 'js/store.js', 'js/engine.js', 'js/ai.js',
+  'js/app.js', 'js/data.js', 'js/store.js', 'js/engine.js',
+  'js/words1.js', 'js/words2.js', 'js/words3.js', 'js/words4.js',
 ];
 
 self.addEventListener('install', (e) => {
