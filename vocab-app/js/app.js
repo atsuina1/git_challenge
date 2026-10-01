@@ -32,6 +32,29 @@ function bindSpeak(root = view) {
   $$('[data-say]', root).forEach((b) => b.addEventListener('click', (e) => { e.stopPropagation(); speak(b.dataset.say); }));
 }
 
+// 確認ダイアログ（ブラウザの confirm() が使えない環境でも動くようページ内に表示）
+function confirmBox(message, okLabel = 'OK', danger = false) {
+  return new Promise((resolve) => {
+    const el = document.createElement('div');
+    el.className = 'overlay';
+    el.innerHTML = `<div class="dialog" role="dialog" aria-modal="true"><p>${esc(message)}</p>
+      <div class="row"><button class="btn ghost" data-r="0">キャンセル</button>
+      <button class="btn ${danger ? 'danger' : ''}" data-r="1">${esc(okLabel)}</button></div></div>`;
+    document.body.appendChild(el);
+    el.querySelectorAll('[data-r]').forEach((b) => b.addEventListener('click', () => { el.remove(); resolve(b.dataset.r === '1'); }));
+    el.querySelector('[data-r="1"]').focus();
+  });
+}
+
+function toast(message) {
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.setAttribute('role', 'status');
+  el.textContent = message;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 2500);
+}
+
 function setHeader(title, right = '') {
   document.getElementById('title').textContent = title;
   document.getElementById('top-right').textContent = right;
@@ -98,8 +121,8 @@ function renderHome() {
     </div>`;
 
   $('#resume')?.addEventListener('click', () => beginStudy());
-  $('#discard')?.addEventListener('click', () => {
-    if (confirm('このセッションを破棄しますか？（解答済みの記録は残ります）')) { abandonSession(); renderHome(); }
+  $('#discard')?.addEventListener('click', async () => {
+    if (await confirmBox('このセッションを破棄しますか？（解答済みの記録は残ります）', '破棄する', true)) { abandonSession(); renderHome(); }
   });
   $('#review')?.addEventListener('click', () => { if (startSession('review')) beginStudy(); });
   $('#new')?.addEventListener('click', () => { if (startSession('new')) beginStudy(); });
@@ -141,8 +164,8 @@ function renderQuestion() {
     <div id="next" class="sticky-next"></div>`;
   bindSpeak();
 
-  $('#quit').addEventListener('click', () => {
-    if (confirm('中断しますか？ホームの「続きから再開」で再開できます。')) showTab('home');
+  $('#quit').addEventListener('click', async () => {
+    if (await confirmBox('中断しますか？ホームの「続きから再開」で再開できます。', '中断する')) showTab('home');
   });
 
   const pick = (i) => {
@@ -293,9 +316,19 @@ function renderSettings() {
     <div class="card">
       <h2>データ</h2>
       <p class="muted small" style="margin-top:0">進捗はこの端末のブラウザに保存されています。機種変更やバックアップにはエクスポートを使ってください。</p>
-      <button class="btn secondary" id="export">エクスポート（JSONを保存）</button>
-      <button class="btn secondary" id="import">インポート</button>
+      <button class="btn secondary" id="export">エクスポート</button>
+      <div id="export-box" hidden style="margin:10px 0">
+        <label class="small muted" for="export-text">ファイルが保存されない場合は、このテキストをコピーして保管してください。</label>
+        <textarea class="code" id="export-text" readonly></textarea>
+        <button class="btn secondary" id="copy" style="margin-top:8px">コピー</button>
+      </div>
+      <button class="btn secondary" id="import">ファイルからインポート</button>
       <input type="file" id="file" accept="application/json,.json" hidden />
+      <details style="margin:10px 0">
+        <summary class="small">テキストを貼り付けてインポート</summary>
+        <textarea class="code" id="import-text" placeholder="エクスポートしたテキストを貼り付け"></textarea>
+        <button class="btn secondary" id="paste-import" style="margin-top:8px">貼り付けた内容でインポート</button>
+      </details>
       <button class="btn danger" id="reset">進捗をすべてリセット</button>
     </div>
     <p class="muted small center">${APP_NAME} ・ 収録 ${WORDS.length} 語</p>`;
@@ -305,12 +338,36 @@ function renderSettings() {
     renderSettings();
   })));
   $('#export').addEventListener('click', () => {
-    const blob = new Blob([exportJSON()], { type: 'application/json' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `phrase400-${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    const json = exportJSON();
+    try {
+      const blob = new Blob([json], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `phrase400-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    } catch { /* ダウンロードできない環境ではコピーで保存 */ }
+    $('#export-box').hidden = false;
+    $('#export-text').value = json;
+  });
+  $('#copy').addEventListener('click', async () => {
+    const ta = $('#export-text');
+    try {
+      await navigator.clipboard.writeText(ta.value);
+      toast('コピーしました。メモアプリなどに貼り付けて保存してください');
+    } catch {
+      ta.select();
+      toast('テキストを選択しました。長押しでコピーしてください');
+    }
+  });
+  $('#paste-import').addEventListener('click', () => {
+    try {
+      importJSON($('#import-text').value);
+      renderSettings();
+      toast('インポートしました');
+    } catch (err) {
+      toast('インポートに失敗しました: ' + err.message);
+    }
   });
   $('#import').addEventListener('click', () => $('#file').click());
   $('#file').addEventListener('change', async (e) => {
@@ -318,14 +375,14 @@ function renderSettings() {
     if (!f) return;
     try {
       importJSON(await f.text());
-      alert('インポートしました');
       renderSettings();
+      toast('インポートしました');
     } catch (err) {
-      alert('インポートに失敗しました: ' + err.message);
+      toast('インポートに失敗しました: ' + err.message);
     }
   });
-  $('#reset').addEventListener('click', () => {
-    if (confirm('学習進捗をすべて削除します。よろしいですか？')) { resetAll(); renderSettings(); }
+  $('#reset').addEventListener('click', async () => {
+    if (await confirmBox('学習進捗をすべて削除します。よろしいですか？', 'リセットする', true)) { resetAll(); renderSettings(); toast('リセットしました'); }
   });
 }
 
