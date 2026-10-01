@@ -1,7 +1,7 @@
 {
-  "name": "C1 Vocab Master",
-  "short_name": "C1 Vocab",
-  "description": "C1レベルの日常・ビジネス・IT英語の単語/熟語/フレーズを習得するアプリ",
+  "name": "C2 Vocab Master",
+  "short_name": "C2 Vocab",
+  "description": "C2レベル以上の日常・ビジネス・IT英語の単語/熟語/フレーズを習得するアプリ",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

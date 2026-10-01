@@ -56,9 +56,9 @@ const GRADE_SCHEMA = {
 export async function gradeSentence(word, sentence) {
   const r = await askJSON({
     system:
-      'You are an English coach for a Japanese professional studying C1-level vocabulary for daily and business (especially IT) conversation. ' +
+      'You are an English coach for a Japanese professional studying C2-level (and above) vocabulary for daily and business (especially IT) conversation. ' +
       'Grade whether the learner used the target expression correctly and naturally. Write feedback_ja in concise Japanese (2-4 sentences). ' +
-      '"corrected" is the learner\'s sentence minimally fixed (identical if already fine). "better_example" is one natural C1-level example using the target.',
+      '"corrected" is the learner\'s sentence minimally fixed (identical if already fine). "better_example" is one natural, sophisticated C2-level example using the target.',
     prompt:
       `Target expression: "${word.t}" (meaning: ${word.ja})\n` +
       `Learner's sentence: """${sentence}"""\n\n` +
@@ -103,12 +103,12 @@ const COACH_SCHEMA = {
 export async function coach(report, wantWords) {
   const r = await askJSON({
     system:
-      'You are an adaptive vocabulary coach for a Japanese learner targeting CEFR C1 English for daily conversation and business, especially the IT industry. ' +
+      'You are an adaptive vocabulary coach for a Japanese learner targeting CEFR C2 (and above) English for daily conversation and business, especially the IT industry. ' +
       'Given their learning statistics, diagnose strengths and weaknesses, and tune the study parameters. ' +
       'analysis_ja: 3-6 sentences in Japanese, specific and actionable. ' +
       'new_per_session: 0-10 new words per session (lower when accuracy is poor or the review backlog is large). ' +
       'max_level: highest difficulty (1-3) to introduce. ja2en_style: choice (multiple choice), hint (typing with first letter), free (typing). ' +
-      `new_words: exactly ${wantWords} C1-level words, idioms or phrases that are NOT in the known list, chosen to fit the learner's weak areas and level. ` +
+      `new_words: exactly ${wantWords} C2-level (or harder) words, idioms or phrases that are NOT in the known list, chosen to fit the learner's weak areas and level. ` +
       'For each: ja = concise Japanese meaning; ex = natural example sentence; m = the exact substring of ex that is the target (as inflected); ' +
       'exJa = Japanese translation of ex; hl = the exact substring of exJa corresponding to m.',
     prompt: JSON.stringify(report),

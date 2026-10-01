@@ -259,12 +259,12 @@ export function checkTyped(word, input) {
   return 'ng';
 }
 
-// 例文作成（AIなし）: 見出し語の主要部分が文中に含まれているか簡易チェック
+// 例文作成（AIなし）: 見出し語の主要部分が文中に含まれているか簡易チェック（警告表示のみに使う）
 export function containsTerm(word, sentence) {
   const s = normalize(sentence);
   const tokens = normalize(word.t).split(' ').filter((t) => t && !['a', 'the', 'my', 'your'].includes(t));
   return tokens.every((t) => {
-    const stem = t.length > 4 ? t.slice(0, Math.max(4, t.length - 2)) : t;
+    const stem = t.length > 4 ? t.slice(0, Math.max(3, t.length - 3)) : t; // 不規則変化(throw→threw)も拾えるよう短めに
     return s.split(' ').some((x) => x.startsWith(stem));
   });
 }

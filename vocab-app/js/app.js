@@ -60,7 +60,7 @@ function showTab(tab) {
 
 // ================= ホーム =================
 function renderHome() {
-  document.getElementById('title').textContent = 'C1 Vocab Master';
+  document.getElementById('title').textContent = 'C2 Vocab Master';
   const s = summary();
   const params = adaptiveParams();
   const lp = params.profile;
@@ -376,7 +376,7 @@ function selfGrade(w, card, text) {
     <button class="btn ghost" id="sg-ng" style="margin-top:8px">✕ 自信なし</button>`;
   $('#fb').appendChild(box);
   bindSpeak(box);
-  $('#sg-ok').addEventListener('click', () => { box.remove(); finish(card, w, has, { note: has ? '' : '見出し語が含まれていないため不正解扱いです' }); });
+  $('#sg-ok').addEventListener('click', () => { box.remove(); finish(card, w, true); });
   $('#sg-ng').addEventListener('click', () => { box.remove(); finish(card, w, false); });
 }
 
@@ -517,7 +517,7 @@ function renderSettings() {
       <input type="file" id="file" accept="application/json,.json" hidden />
       <button class="btn danger" id="reset">進捗をすべてリセット</button>
     </div>
-    <p class="muted small center">C1 Vocab Master ・ 収録 ${allWords().length} 語</p>`;
+    <p class="muted small center">C2 Vocab Master ・ 収録 ${allWords().length} 語</p>`;
 
   $$('[data-seg]').forEach((g) => $$('button', g).forEach((b) => b.addEventListener('click', () => {
     const name = g.dataset.seg;

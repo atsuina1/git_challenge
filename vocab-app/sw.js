@@ -1,5 +1,5 @@
 // オフライン対応: アプリ本体をキャッシュし、更新があればバックグラウンドで差し替える
-const CACHE = 'c1vocab-v1';
+const CACHE = 'c1vocab-v2';
 const ASSETS = [
   './', 'index.html', 'css/style.css', 'manifest.webmanifest', 'icons/icon.svg', 'icons/icon-192.png',
   'js/app.js', 'js/data.js', 'js/store.js', 'js/engine.js', 'js/ai.js',

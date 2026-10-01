@@ -1,6 +1,6 @@
-# C1 Vocab Master
+# C2 Vocab Master
 
-C1レベルの日常会話・ビジネス英語（特にIT系）の単語／熟語／フレーズを習得するための、スマホ向けPWAです。
+C2レベル以上の日常会話・ビジネス英語（特にIT系）の単語／熟語／フレーズを習得するための、スマホ向けPWAです。
 ビルド不要の静的サイト（HTML/CSS/JavaScript）で、進捗は端末のブラウザ内に保存されます。
 
 ## 使い方
@@ -56,7 +56,7 @@ vocab-app/
 ├── css/style.css
 ├── icons/
 └── js/
-    ├── data.js     初期単語データ（55語）
+    ├── data.js     初期単語データ（C2以上・58語）
     ├── store.js    進捗・設定の保存
     ├── engine.js   出題スケジュール・判定・自動レベル調整
     ├── ai.js       Claude API 連携
